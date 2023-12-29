@@ -1,0 +1,32 @@
+---
+- name: Configure Web Server
+  hosts: web_server
+  become: true
+  remote_user: admin
+
+  tasks:
+    - name: Update APT package list
+      become: yes
+      become_user: root
+      apt:
+        update_cache: yes
+
+    - name: Install apache2
+      become: yes
+      become_user: root
+      apt:
+        name: apache2
+        state: present
+
+    - name: Create index.html file
+      become: yes
+      become_user: root
+      shell: echo "<html><body><h1>Hello, this is my website!</h1></body></html>" > /var/www/html/index.html
+      
+  handlers:
+    - name: Reload Apache
+      become: yes
+      become_user: root
+      service:
+        name: apache2
+        state: restarted
